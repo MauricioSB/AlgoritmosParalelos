@@ -57,36 +57,27 @@ void prefix_sum(int *X, int n)
 int imprimeArreglo(int *X, int n)
 {
 	printf("Arreglo inicial: \n");
-	for (int i = 1; i < n; i++)
+	for (int i = 0; i < n; i++)
 	{
 		printf("%d,", X[i]);
 	}
 	printf("\n");
 }
 
+/* Funcion que permite la impresion de un arreglo
+ * X el arreglo que va recibir
+ * n es el tamanio del arreglo
+ */
 int imprimeResultado(int *X, int n)
 {
 	printf("Arreglo final: \n");
-	for (int i = 1; i < n; ++i)
+	for (int i = 0; i < n; ++i)
 	{
 		printf("%d,", X[i]);
 	}
 	printf("\n");	
 }
 
-/* Funcion que permite calcular los exponentes para nuestros
- * arreglos.
- * potencia es el exponente
- */
-int potenciaCuadrada(int potencia) 
-{
-	int base = 2;
-	int sol = 1;
-	for (int i = 0; i <= potencia; ++i)
-	{
-		sol *= base;
-	} 
-}
 
 int main(int argc, char const *argv[])
 {
@@ -112,6 +103,7 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}	
 	int *X = (int*)malloc((n+1)*sizeof(int));
+	//Indice i
 	int i = 0;
 	//La cota del numero de elementos aleatorios
 	//Tambien ingresa elementos en el arreglo
@@ -119,7 +111,6 @@ int main(int argc, char const *argv[])
 	{
 		X[i] = (int)rand() % 100;
 	}
-	X[n+1] = 0;
 	//Imprimos nuestro arreglo inicial
 	printf("Arreglo que se le va hacer prefix sum: \n");
 	imprimeArreglo(X, n);
@@ -131,9 +122,8 @@ int main(int argc, char const *argv[])
 		{
 			prefix_sum(X, n);
 		}
-	}//Termina la operacion paralela
+	}//Termina la funcion paralela
 	//Imprimimos el resulado
-	//free(X);
 	imprimeResultado(X,n);
 	return 0;
 }//Fin de la Practica04
