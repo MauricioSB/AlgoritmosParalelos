@@ -1,96 +1,111 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <sys/resource.h>
 #include <omp.h>
+#include <time.h>
 #include <math.h>
-
 #define CHAR_BITS 2
 
 
-/* Funcion que permite la impresion de un arreglo
- * X el arreglo que va recibir
- * n es el tamanio del arreglo
- */
-int imprimeArreglo(int *X, int n)
-{
-	printf("Arreglo inicial: \n");
-	for (int i = 1; i < n; i++)
-	{
-		printf("%d,", X[i]);
-	}
-	printf("\n");
-}
 
 int imprimeResultado(int *X, int n)
 {
-	printf("Arreglo final: \n");
-	for (int i = 1; i < n; ++i)
+	for (int i = 1; i <= n; ++i)
 	{
 		printf("%d,", X[i]);
-	}
-	printf("\n");	
-}
-
-void binario(int num)
-{
-	int sup = CHAR_BITS*sizeof(int);
-	while(sup >= 0)
-	{
-		if (num & (((long int)1) << sup))
-		{
-			printf("1");
-		} else
-		{
-			printf("0");
-		}
-		sup--;
 	}
 	printf("\n");
 }
 
- int main(int argc, char const *argv[])
- {
- 	//Numero de vertices
-	int n;
-	//Semilla para hacer random los elementos del arreglo
-	int semilla;
-	if (argc < 2)
-	{
-		printf("Por favor, especifique el numero de hilos\n");
+int main(int argc, char** argv) {
+if (argc < 3){     /*Verificacion de argumentos */
+		printf("por favor especifique la semilla");
 		exit(1);
-	} 
-	//Escanea potencia como primer argumento
-	sscanf(argv[1], "%i", &n);
-	//Escanea la semilla como segundo argumento
-	sscanf(argv[2], "%i", &semilla);
-	if (n < 1 || semilla < 1)
-	{
-		printf("Por favor ingresa numeros positivos\n");
+	}else {   /*Aprobacion de argumentos*/
+  int semilla;
+  int vertice;  //Auxiliar potencia
+  sscanf(argv[1],"%i",&vertice);
+  sscanf(argv[2],"%i",&semilla);
+	if (vertice < 0 || semilla < 0){
+		printf("Ingrese un entero positivo por favor \n");
 		exit(1);
 	}
-	srand(semilla);
-	//Le asignamos el tamanio del arreglo con 2^k	
-	int *X = (int*)malloc((n+1)*sizeof(int));
-	int *repetir = (int*)malloc((n+1)*sizeof(int));
-	int i = 1;
 
-	//Se llena el arreglo con números aleatorios, según la semilla. 
-    for (int i = 1; i<n; i++){
-        int elementoPoner = rand()%(n)+1;
-        if(repetir[elementoPoner]==0){
-            X[i] = elementoPoner;
-            repetir[elementoPoner] = 1;
-        }else{
-            i--;
-        }
-    }
+	int arreglo[vertice];
+	  int aux;
+	  srand(semilla);
+	  for(int i = 1; i <= vertice; ++i){
+	    aux = (rand() % vertice +1);
+	    int aux2 = 0;
+	    while(aux2 < i){
+	      if(aux != arreglo[aux2])
+	        aux2++;
+	      else{
+	        aux = (rand() % vertice +1);
+	        aux2 = 0;
+	      }
+	    }
+	    arreglo[i] = aux;
+	  }
 
-	imprimeArreglo(X,n);
 
-	for (int i = 1; i < n; i++)
+
+
+  printf("Arreglo original\n");
+
+  for (int j = 1; j <= vertice; j++){
+    int aux = arreglo[j];
+    printf("%i,", aux);
+  }
+  printf("\n");
+
+	int binarioI(int num)
+  {
+      int sup = CHAR_BITS*sizeof(int);
+      int i = 0;
+      while(sup >= i)
+      {
+          if(num & (((long int)1) << sup))
+              return 1;
+          else
+              return 0;
+          sup--;
+      }
+      printf("\n");
+  	}
+
+		unsigned binario(unsigned num)
+		{
+			if(num == 0) return 0;
+			if(num == 1) return 1;
+			return (num%2) + 10 * binario(num/2);
+		}
+
+	int x;
+  for (int j = 1; j <= vertice; ++j){
+		x = binario(arreglo[j]);
+		arreglo[j] = x;
+	}
+int ci[100];
+	imprimeResultado(arreglo, vertice);
+	omp_set_num_threads(vertice);
+	#pragma omp parallel
 	{
-		binario(X[i]);	
-	}			
- 	return 0;
- }
+		int k;
+		int idHilo = omp_get_thread_num();
+
+		for (int i = 1; i <= vertice; ++i)
+		{
+				if (arreglo[idHilo] != arreglo[idHilo+1])
+				{
+					++k;
+				}
+				ci[i] = (2*k) + arreglo[idHilo];
+
+		}
+	}
+		imprimeResultado(ci,vertice);
+
+}
+	return 0;
+}
