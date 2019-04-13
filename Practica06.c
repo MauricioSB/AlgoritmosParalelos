@@ -5,7 +5,11 @@
 #include <time.h>
 #include <math.h>
  
-
+/* Permite verficar si un numero se esta repitiendo
+ * X es el arreglo
+ * n es el tamanio del arreglo
+ * num es el numero aleatorio generado
+ */
 int existeElem(int *X, int n, int num)
 {
 	int enc = 0;
@@ -17,6 +21,10 @@ int existeElem(int *X, int n, int num)
 	return enc;
 }
 
+/*Funcion que permite generar los numeros aleatorios
+ * X es el arreglo que va a recibir
+ * n es el tamanio del arreglo
+ */
 void generador(int *X, int n)
 {
 	int num;
@@ -28,12 +36,6 @@ void generador(int *X, int n)
 	}
 }
 
-int swap(int *X, int i, int j)
-{
-	int aux = X[i];
-	X[i] = X[j];
-	X[j] = aux;	
-}
 
 int max(int *X, int n, int i)
 {
@@ -51,6 +53,10 @@ int max(int *X, int n, int i)
     return max_val;
 }
 
+/* Funcion que permite la impresion de un arreglo
+ * X el arreglo que va recibir
+ * n es el tamanio del arreglo
+ */
 int imprimeArreglo(int *X, int n)
 {
 	printf("Arreglo inicial: \n");
@@ -61,6 +67,10 @@ int imprimeArreglo(int *X, int n)
 	printf("\n");
 }
 
+/* Funcion que permite la impresion de un arreglo
+ * X el arreglo que va recibir
+ * n es el tamanio del arreglo
+ */
 int imprimeResultado(int *X, int n)
 {
 	for (int i = 1; i <= n; i++)
@@ -81,10 +91,7 @@ int imprimeResultado(int *X, int n)
 		printf("Por favor, especifique el numero de hilos\n");
 		exit(1);
 	} 
-	//Escanea potencia como primer argumento
 	sscanf(argv[1], "%i", &k);
-	//Escanea la semilla como segundo argumento
-	//sscanf(argv[2], "%i", &semilla);
 	if (k < 1)
 	{
 		printf("El numero que debes ingresar es positivo\n");
@@ -94,51 +101,40 @@ int imprimeResultado(int *X, int n)
 	int n = pow(2,k);
 	int *X = (int*)malloc((n+1)*sizeof(int));
 	generador(X,n);
-
 	imprimeArreglo(X,n);
-	
-	/*Funcion que permite hacer el intercambio de indices
-	 * i el indice
-	 * j el segundo indice
-	 */
-	/*
-	void swap(int i, int j) 
-	{
-		int aux = X[i];
-		X[i] = X[j];
-		X[j] = aux;
-	}*/
-
-	omp_set_num_threads(n);
-	int i = 0;
-
+	omp_set_num_threads(n/2);
+	int posI;
+	int posJ;
 	#pragma omp parallel
 	{
-		/*//max(X,n,i);
-    	int idx;
-    	int max_val;
 
-    	//#pragma omp parallel for reduction(max:max_val) 
-    		for (idx = i; idx <= n; idx++)
-    		{
-    		   max_val = max_val >= X[idx] ? max_val : X[idx];
-    		   printf("Swap: %i\n", X[idx]);
-    		}
-
-    	//return max_val;
-    	printf("El elemento maximo es: %i\n", max_val);*/
-    	int idHilo = omp_get_thread_num();
-    	int ronda = pow(2,0+1);
-    	printf("%i, \n", ronda);
-    	i = n/ronda;
-		for (; i <= n; i++)
+		int ronda = 1;
+		int idHilo = omp_get_thread_num();
+		while(ronda <= k)
 		{
+			//printf("Ronda: %i\n", ronda);
+			for (int i = 1; i <= n; i++)
+			{
+				int iteraciones = n/pow(2,ronda);
+				posI = (pow(2,ronda)*i)-(pow(2,ronda-1));
+				posJ = (pow(2,ronda)*i);
+				for (int j = 1; j <= iteraciones; j++)
+				{
+					if (X[posI] > X[posJ])
+					{
+						int aux = X[posI];
+						X[posI] = X[posJ];
+						X[posJ] = aux;
+						//printf("Swap: %i\n", aux);						
+					}
+				}
+			}
 			ronda++;
-			printf("ronda: %i\n", ronda);
-		}
+		}	
 
 	}
 	//Arreglo resultante
+	printf("Resultado: \n");
 	imprimeResultado(X,n);	
  	return 0;
  }
