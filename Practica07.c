@@ -6,19 +6,62 @@
 #include <math.h>
 #include <regex.h>
 
-void witness()
+/*NO esta terminado*/
+//Notaciones: k: witness dado, i.e., witness(j-1+1)
+//m: Largo del patron (length)
+//p(k): Posicion del patron
+//s es el candidato de B
+//B: es el bloque
+void witness(char* patron)
 {
+	int k;
+	int s;
+	char *witnes = (char*)malloc((n+1)*sizeof(char));
+	#pragma omp parallel for
+	for (int i = 1; i <= (sizeof(patron))/2; i++)
+	{
+		witnes[i] = 0;
+	}
+	for (int i = 1; i <= (sizeof(patron) - 1); ++i)
+	{
+		//Primer candidato en el i-bloque
+		int j = 2;
+		fuerzaBruta(patron,witnes[j]);
+		if (witnes[j] == 0)
+		 {
+		 	exit(1);
+		 }
+		#pragma omp parallel for
+		for (i = 2; i <= count; i++)
+		 {
+		 	duelo(k,s, patron);
+		 } 
 
+	}
 }
 
-void fuerzaBruta(char* patron)
+/*Ni idea si este funciona*/
+void fuerzaBruta(char* patron, int j)
 {
-
+	for (int i = 1; i <= sizeof(patron); i++)
+	{
+		int p = sizeof(patron) - (i + 1);
+		witness(i);
+	}
 }
 
-void duelo(char* patron)
+/*Ignorar este*/
+void duelo(int k, int s, char* patron)
 {
+	if (k <= (sizeof(patron) - (j+1)))
+	{
+		while(patron[k] != patron[k+j-1])
+		{
+			k = witness(j);
+		}
 
+
+	}	
 }
 
 int main(int argc, char** argv)
